@@ -75,4 +75,20 @@ router.delete('/:id', requireAuth, async (req, res) => {
   }
 })
 
+router.post('/register', async (req, res) => {
+  const { filename, original_name, mime_type, url, category } = req.body
+  if (!filename || !url) return res.status(400).json({ error: 'filename and url required' })
+  try {
+    await pool.query(
+      `INSERT INTO media (filename, original_name, mime_type, url, category)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT DO NOTHING`,
+      [filename, original_name || filename, mime_type || 'image/jpeg', url, category || 'site']
+    )
+    res.json({ ok: true })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 export default router

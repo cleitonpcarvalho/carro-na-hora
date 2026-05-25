@@ -1,10 +1,18 @@
 import { useVehicles } from '../hooks/useVehicles'
 import { usePexels }   from '../hooks/usePexels'
+import { useSectionImage } from '../hooks/useSectionImage'
 import { Link }        from 'react-router-dom'
 import VehicleCard     from '../components/VehicleCard'
 
 function HeroSection() {
-  const { url: heroBg, loading } = usePexels('luxury car showroom night', 'large2x', 'landscape')
+  const { url: heroBg, loading } = useSectionImage({
+    pageSlug:      'home',
+    sectionSlug:   'hero',
+    field:         'background_image',
+    fallbackQuery: 'luxury car showroom night',
+    orientation:   'landscape',
+    size:          'large2x',
+  })
 
   return (
     <section
@@ -312,7 +320,14 @@ function TestimonialsSection() {
 }
 
 function CTASection() {
-  const { url: bgUrl } = usePexels('car keys handover dealership', 'large2x', 'landscape')
+  const { url: bgUrl } = useSectionImage({
+    pageSlug:      'home',
+    sectionSlug:   'cta_banner',
+    field:         'background_image',
+    fallbackQuery: 'car keys handover dealership',
+    orientation:   'landscape',
+    size:          'large2x',
+  })
 
   return (
     <section className="relative section-padding overflow-hidden">

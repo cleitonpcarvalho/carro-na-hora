@@ -1,4 +1,5 @@
 import { usePexels } from '../hooks/usePexels'
+import { useSectionImage } from '../hooks/useSectionImage'
 
 function SobreGallerySection() {
   const { url: img1 } = usePexels('car showroom luxury interior', 'large', 'landscape')
@@ -73,8 +74,22 @@ function SobreGallerySection() {
 }
 
 export default function Sobre() {
-  const { url: heroUrl } = usePexels('luxury car showroom portugal', 'large2x', 'landscape')
-  const { url: teamUrl } = usePexels('car dealership professional team', 'large', 'landscape')
+  const { url: heroUrl } = useSectionImage({
+    pageSlug:      'sobre',
+    sectionSlug:   'about_hero',
+    field:         'background_image',
+    fallbackQuery: 'luxury car showroom portugal',
+    orientation:   'landscape',
+    size:          'large2x',
+  })
+  const { url: teamUrl } = useSectionImage({
+    pageSlug:      'sobre',
+    sectionSlug:   'about_story',
+    field:         'image',
+    fallbackQuery: 'car dealership professional team',
+    orientation:   'landscape',
+    size:          'large',
+  })
   const { url: carUrl } = usePexels('premium car detail close up', 'large', 'portrait')
 
   const values = [

@@ -35,10 +35,45 @@ router.put('/sections/:id', requireAuth, async (req, res) => {
   const { content } = req.body
   try {
     const result = await pool.query(
-      'UPDATE sections SET content = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+      `UPDATE sections
+       SET content    = content || $1::jsonb,
+           updated_at = NOW()
+       WHERE id = $2
+       RETURNING *`,
       [JSON.stringify(content), req.params.id]
     )
     res.json(result.rows[0])
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+router.patch('/sections/:id/merge', async (req, res) => {
+  const { content } = req.body
+  if (!content || typeof content !== 'object')
+    return res.status(400).json({ error: 'content object required' })
+
+  const allowedKeys = ['background_image', 'image']
+  const safe = {}
+  for (const key of allowedKeys) {
+    if (content[key] && typeof content[key] === 'string'
+        && content[key].startsWith('http://localhost')) {
+      safe[key] = content[key]
+    }
+  }
+
+  if (Object.keys(safe).length === 0)
+    return res.status(400).json({ error: 'no valid image fields' })
+
+  try {
+    await pool.query(
+      `UPDATE sections
+       SET content    = content || $1::jsonb,
+           updated_at = NOW()
+       WHERE id = $2`,
+      [JSON.stringify(safe), req.params.id]
+    )
+    res.json({ ok: true })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

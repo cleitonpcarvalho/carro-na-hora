@@ -1,8 +1,16 @@
 import { useState } from 'react'
 import { usePexels } from '../hooks/usePexels'
+import { useSectionImage } from '../hooks/useSectionImage'
 
 export default function Contacto() {
-  const { url: heroBg } = usePexels('lisbon portugal city modern', 'large2x', 'landscape')
+  const { url: heroBg } = useSectionImage({
+    pageSlug:      'contacto',
+    sectionSlug:   'contact_hero',
+    field:         'background_image',
+    fallbackQuery: 'lisbon portugal city modern',
+    orientation:   'landscape',
+    size:          'large2x',
+  })
 
   const [form, setForm] = useState({ nome: '', email: '', assunto: '', mensagem: '' })
   const [status, setStatus] = useState(null)
