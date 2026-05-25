@@ -47,10 +47,11 @@ export default function Viaturas() {
         {heroBg && (
           <>
             <img src={heroBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/96 to-dark-bg/98" />
+            <div className="absolute inset-0 bg-brand-blue/80" />
+            <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/60 via-transparent to-dark-bg/40" />
           </>
         )}
-        {!heroBg && <div className="absolute inset-0 bg-hero-gradient" />}
+        {!heroBg && <div className="absolute inset-0 bg-brand-blue" />}
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
           <span className="text-brand-gold text-sm font-bold uppercase tracking-widest">
