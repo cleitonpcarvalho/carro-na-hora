@@ -234,11 +234,32 @@ function WhyUsSection() {
 }
 
 function TestimonialsSection() {
+  const { url: avatarM1 } = usePexels('professional man portrait headshot', 'small', 'square')
+  const { url: avatarF1 } = usePexels('professional woman portrait headshot', 'small', 'square')
+  const { url: avatarM2 } = usePexels('young man smiling portrait', 'small', 'square')
+
   const testimonials = [
-    { name: 'Miguel Ferreira',  text: 'Processo incrivelmente rápido. Em menos de 48 horas tinha o meu carro novo. Recomendo a todos.', stars: 5 },
-    { name: 'Ana Sousa',        text: 'Excelente atendimento, total transparência no processo. Voltarei certamente para o próximo automóvel.', stars: 5 },
-    { name: 'Carlos Mendes',    text: 'Encontrei exactamente o que procurava ao melhor preço. A equipa foi fantástica do início ao fim.', stars: 5 },
+    {
+      name:   'Miguel Ferreira',
+      text:   'Processo incrivelmente rápido. Em menos de 48 horas tinha o meu carro novo. Recomendo a todos.',
+      stars:  5,
+      gender: 'M1',
+    },
+    {
+      name:   'Ana Sousa',
+      text:   'Excelente atendimento, total transparência no processo. Voltarei certamente para o próximo automóvel.',
+      stars:  5,
+      gender: 'F1',
+    },
+    {
+      name:   'Carlos Mendes',
+      text:   'Encontrei exactamente o que procurava ao melhor preço. A equipa foi fantástica do início ao fim.',
+      stars:  5,
+      gender: 'M2',
+    },
   ]
+
+  const avatarMap = { M1: avatarM1, F1: avatarF1, M2: avatarM2 }
 
   return (
     <section className="section-padding bg-brand-blue relative overflow-hidden">
@@ -265,10 +286,22 @@ function TestimonialsSection() {
               </div>
               <p className="text-white/80 text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-brand-gold/20 rounded-full flex items-center justify-center">
-                  <span className="text-brand-gold font-bold text-sm">{t.name[0]}</span>
+                {avatarMap[t.gender] ? (
+                  <img
+                    src={avatarMap[t.gender]}
+                    alt={t.name}
+                    className="w-11 h-11 rounded-full object-cover border-2 border-brand-gold/40"
+                    onError={e => { e.target.style.display = 'none' }}
+                  />
+                ) : (
+                  <div className="w-11 h-11 bg-brand-gold/20 rounded-full flex items-center justify-center">
+                    <span className="text-brand-gold font-bold">{t.name[0]}</span>
+                  </div>
+                )}
+                <div>
+                  <p className="text-white font-bold text-sm">{t.name}</p>
+                  <p className="text-white/40 text-xs">Cliente verificado</p>
                 </div>
-                <span className="text-white font-semibold text-sm">{t.name}</span>
               </div>
             </div>
           ))}
@@ -286,7 +319,8 @@ function CTASection() {
       {bgUrl && (
         <>
           <img src={bgUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-blue/98 to-dark-bg/95" />
+          <div className="absolute inset-0 bg-brand-blue/88" />
+          <div className="absolute inset-0 bg-gradient-to-r from-dark-bg/70 via-dark-bg/30 to-dark-bg/60" />
         </>
       )}
       {!bgUrl && (
@@ -325,12 +359,145 @@ function CTASection() {
   )
 }
 
+function StatsSection() {
+  const { url: cityUrl } = usePexels('lisbon portugal aerial view', 'large2x', 'landscape')
+
+  return (
+    <section className="section-padding bg-white relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="relative">
+            {cityUrl ? (
+              <img
+                src={cityUrl}
+                alt="Lisboa"
+                className="rounded-2xl shadow-hover w-full h-80 object-cover"
+              />
+            ) : (
+              <div className="rounded-2xl bg-light-bg w-full h-80" />
+            )}
+            <div className="absolute -bottom-5 -right-5 bg-cta-gradient
+                            text-white rounded-2xl p-5 shadow-glow-gold">
+              <p className="text-3xl font-black">Lisboa</p>
+              <p className="text-white/80 text-xs mt-1">Capital de Portugal</p>
+            </div>
+          </div>
+          <div>
+            <span className="text-brand-gold text-sm font-bold uppercase tracking-widest">
+              A Nossa Localização
+            </span>
+            <h2 className="text-4xl font-black text-brand-blue mt-2 mb-5 leading-tight">
+              No Coração de Lisboa, Prontos para Si
+            </h2>
+            <p className="text-muted leading-relaxed mb-4">
+              Situados numa localização privilegiada em Lisboa, a Carro da Hora
+              está acessível de qualquer ponto da cidade. O nosso espaço moderno
+              e confortável foi pensado para que a sua visita seja uma experiência
+              agradável, sem pressão e ao seu ritmo.
+            </p>
+            <p className="text-muted leading-relaxed mb-8">
+              Visite-nos pessoalmente ou contacte-nos primeiro - estamos disponíveis
+              para responder a todas as suas questões antes de se deslocar.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href="https://maps.app.goo.gl/tFQTZ1pATAtxK6tC9"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 border-2 border-brand-blue
+                           text-brand-blue font-bold px-6 py-3 rounded-xl
+                           hover:bg-brand-blue hover:text-white transition-all duration-300"
+              >
+                Ver no Mapa
+              </a>
+              <a
+                href="tel:+351932992377"
+                className="inline-flex items-center gap-2 bg-cta-gradient text-white
+                           font-bold px-6 py-3 rounded-xl btn-glow
+                           hover:scale-105 transition-all duration-300"
+              >
+                Ligar Agora
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ProcessSection() {
+  const steps = [
+    {
+      num:  '01',
+      title: 'Escolha a Sua Viatura',
+      desc:  'Explore o nosso portefólio online ou visite-nos pessoalmente. Temos uma selecção criteriosa de viaturas premium prontas a ser testadas.',
+    },
+    {
+      num:  '02',
+      title: 'Contacte-nos Directamente',
+      desc:  'Fale connosco por WhatsApp, telefone ou email. Respondemos rapidamente e esclarecemos todas as suas dúvidas sem compromisso.',
+    },
+    {
+      num:  '03',
+      title: 'Negocie sem Pressão',
+      desc:  'Acreditamos numa negociação transparente e justa. Sem letras pequenas, sem surpresas - o preço apresentado é o preço real.',
+    },
+    {
+      num:  '04',
+      title: 'Chave na Mão',
+      desc:  'Tratamos de toda a documentação necessária. Da primeira visita à chave na mão, o processo é simples, rápido e descomplicado.',
+    },
+  ]
+
+  return (
+    <section className="section-padding bg-light-bg">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <span className="text-brand-gold text-sm font-bold uppercase tracking-widest">
+            Como Funciona
+          </span>
+          <h2 className="text-4xl md:text-5xl font-black text-brand-blue mt-2 mb-4">
+            Simples, Rápido e Transparente
+          </h2>
+          <p className="text-muted text-lg max-w-xl mx-auto">
+            Comprar um automóvel connosco é um processo descomplicado.
+            Veja como funciona em quatro passos.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {steps.map((step, i) => (
+            <div key={step.num} className="relative">
+              {i < steps.length - 1 && (
+                <div className="hidden lg:block absolute top-8 left-full w-full h-0.5
+                                bg-gradient-to-r from-brand-gold/40 to-transparent
+                                z-0 -translate-y-1/2" />
+              )}
+              <div className="bg-white rounded-2xl p-7 shadow-soft card-hover relative z-10">
+                <div className="w-14 h-14 bg-cta-gradient rounded-2xl flex items-center
+                                justify-center mb-5 shadow-glow-gold">
+                  <span className="text-white font-black text-lg">{step.num}</span>
+                </div>
+                <h3 className="text-brand-blue font-black text-base mb-2">{step.title}</h3>
+                <p className="text-muted text-sm leading-relaxed">{step.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function Home() {
   return (
     <>
       <HeroSection />
       <FeaturedVehicles />
       <WhyUsSection />
+      <ProcessSection />
+      <StatsSection />
       <TestimonialsSection />
       <CTASection />
     </>

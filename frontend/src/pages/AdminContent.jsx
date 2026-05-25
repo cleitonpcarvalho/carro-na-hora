@@ -1,54 +1,117 @@
 import { useState, useEffect } from 'react'
 import AdminLayout from '../components/AdminLayout'
-import api from '../services/api'
+import api         from '../services/api'
 
 const SECTION_LABELS = {
-  hero: 'Hero Principal',
+  hero:              'Hero Principal',
   featured_vehicles: 'Viaturas em Destaque',
-  why_us: 'Porquê a Carro da Hora',
-  cta_banner: 'Banner de Conversão',
-  testimonials: 'Testemunhos',
-  about_hero: 'Cabeçalho Sobre Nós',
-  about_story: 'A Nossa História',
-  about_values: 'Os Nossos Valores',
-  contact_hero: 'Cabeçalho Contacto',
-  contact_map: 'Mapa e Morada',
+  why_us:            'Porquê a Carro da Hora',
+  cta_banner:        'Banner de Conversão',
+  testimonials:      'Testemunhos',
+  about_hero:        'Cabeçalho Sobre Nós',
+  about_story:       'A Nossa História',
+  about_values:      'Os Nossos Valores',
+  contact_hero:      'Cabeçalho Contacto',
+  contact_map:       'Mapa e Morada',
 }
 
 const FIELD_LABELS = {
-  headline: 'Título Principal',
-  subheadline: 'Subtítulo',
-  cta_primary_text: 'Botão Principal - Texto',
-  cta_primary_url: 'Botão Principal - URL',
-  cta_secondary_text: 'Botão Secundário - Texto',
-  title: 'Título',
-  subtitle: 'Subtítulo',
-  text: 'Texto',
-  cta_text: 'Botão - Texto',
-  maps_embed_url: 'URL do Google Maps',
-  address: 'Morada',
-  phone: 'Telefone',
-  email: 'Email',
-  background_image: 'Imagem de Fundo',
-  image: 'Imagem',
+  headline:           'Título Principal',
+  subheadline:        'Subtítulo',
+  cta_primary_text:   'Botão Principal — Texto',
+  cta_primary_url:    'Botão Principal — Destino',
+  cta_secondary_text: 'Botão Secundário — Texto',
+  title:              'Título',
+  subtitle:           'Subtítulo',
+  text:               'Texto',
+  cta_text:           'Botão — Texto',
+  address:            'Morada',
+  phone:              'Telefone',
+  email:              'Email',
+  background_image:   'Imagem de Fundo',
+  image:              'Imagem',
 }
+
+const HIDDEN_FIELDS = new Set([
+  'maps_embed_url',
+  'cta_primary_url',
+])
 
 function isImageField(key) {
   return key === 'background_image' || key === 'image'
 }
 
 function isLongText(key) {
-  return key === 'text' || key === 'subheadline' || key === 'subtitle'
+  return ['text', 'subheadline', 'subtitle', 'headline'].includes(key)
 }
 
 function isValidUrl(val) {
   return val && (val.startsWith('http://') || val.startsWith('https://'))
 }
 
+function ImageFieldEditor({ fieldKey, value, onChange }) {
+  const [showUrlInput, setShowUrlInput] = useState(false)
+
+  return (
+    <div className="space-y-3">
+      {isValidUrl(value) ? (
+        <div className="relative group">
+          <img
+            src={value}
+            alt=""
+            className="w-full h-40 object-cover rounded-xl border border-gray-200"
+            onError={e => { e.target.style.display = 'none' }}
+          />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30
+                          rounded-xl transition-all duration-200 flex items-center
+                          justify-center opacity-0 group-hover:opacity-100">
+            <button
+              onClick={() => setShowUrlInput(!showUrlInput)}
+              className="bg-white text-brand-blue text-xs font-bold
+                         px-4 py-2 rounded-lg shadow-sm"
+            >
+              Substituir Imagem
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="h-24 bg-light-bg rounded-xl border-2 border-dashed
+                        border-gray-200 flex flex-col items-center justify-center gap-2">
+          <p className="text-xs text-muted">Sem imagem</p>
+          <button
+            onClick={() => setShowUrlInput(!showUrlInput)}
+            className="text-xs text-brand-blue font-semibold hover:underline"
+          >
+            Adicionar Imagem
+          </button>
+        </div>
+      )}
+
+      {showUrlInput && (
+        <div className="flex gap-2">
+          <input
+            value={value || ''}
+            onChange={e => onChange(e.target.value)}
+            className="admin-input flex-1 text-xs"
+            placeholder="Cole aqui o URL da imagem"
+          />
+          <button
+            onClick={() => setShowUrlInput(false)}
+            className="btn-secondary text-xs px-3"
+          >
+            OK
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function SectionEditor({ section, onSave }) {
   const [content, setContent] = useState(section.content || {})
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
+  const [saving,  setSaving]  = useState(false)
+  const [saved,   setSaved]   = useState(false)
+  const [open,    setOpen]    = useState(false)
 
   const handleChange = (key, value) => {
     setContent(c => ({ ...c, [key]: value }))
@@ -68,89 +131,98 @@ function SectionEditor({ section, onSave }) {
     }
   }
 
-  const editableFields = Object.entries(content).filter(
-    ([, val]) => typeof val === 'string' && !Array.isArray(val)
+  const editableFields = Object.entries(content).filter(([key, val]) =>
+    typeof val === 'string' &&
+    !Array.isArray(val) &&
+    !HIDDEN_FIELDS.has(key)
   )
 
+  const hasFields = editableFields.length > 0
+
   return (
-    <div className="admin-card space-y-4">
-      <h3 className="font-black text-brand-blue text-base">
-        {SECTION_LABELS[section.slug] || section.title || section.slug}
-      </h3>
+    <div className="admin-card overflow-hidden">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between text-left"
+      >
+        <h3 className="font-black text-brand-blue text-base">
+          {SECTION_LABELS[section.slug] || section.title || section.slug}
+        </h3>
+        <svg
+          className={`w-5 h-5 text-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
 
-      {editableFields.length === 0 ? (
-        <p className="text-muted text-sm">Esta secção não tem campos de texto editáveis directamente.</p>
-      ) : (
-        <div className="space-y-4">
-          {editableFields.map(([key, value]) => (
-            <div key={key}>
-              <label className="admin-label">{FIELD_LABELS[key] || key}</label>
+      {open && (
+        <div className="mt-5 space-y-4 pt-5 border-t border-gray-100">
+          {!hasFields ? (
+            <p className="text-muted text-sm">
+              Esta secção não tem campos editáveis directamente.
+            </p>
+          ) : (
+            editableFields.map(([key, value]) => (
+              <div key={key}>
+                <label className="admin-label">
+                  {FIELD_LABELS[key] || key}
+                </label>
 
-              {isImageField(key) ? (
-                <div className="space-y-2">
+                {isImageField(key) ? (
+                  <ImageFieldEditor
+                    fieldKey={key}
+                    value={value}
+                    onChange={val => handleChange(key, val)}
+                  />
+                ) : isLongText(key) ? (
+                  <textarea
+                    value={value || ''}
+                    onChange={e => handleChange(key, e.target.value)}
+                    rows={4}
+                    className="admin-input resize-none"
+                  />
+                ) : (
                   <input
                     value={value || ''}
                     onChange={e => handleChange(key, e.target.value)}
                     className="admin-input"
-                    placeholder="URL da imagem"
                   />
-                  {isValidUrl(value) ? (
-                    <img
-                      src={value}
-                      alt=""
-                      className="h-24 rounded-xl object-cover border border-gray-200"
-                      onError={e => e.target.style.display = 'none'}
-                    />
-                  ) : (
-                    <div className="h-16 bg-light-bg rounded-xl flex items-center justify-center">
-                      <span className="text-xs text-muted">Sem imagem</span>
-                    </div>
-                  )}
-                </div>
-              ) : isLongText(key) ? (
-                <textarea
-                  value={value || ''}
-                  onChange={e => handleChange(key, e.target.value)}
-                  rows={4}
-                  className="admin-input resize-none"
-                />
-              ) : (
-                <input
-                  value={value || ''}
-                  onChange={e => handleChange(key, e.target.value)}
-                  className="admin-input"
-                />
-              )}
-            </div>
-          ))}
+                )}
+              </div>
+            ))
+          )}
+
+          <div className="flex items-center gap-3 pt-2">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="btn-primary text-xs py-2 px-5"
+            >
+              {saving ? 'A guardar...' : 'Guardar Secção'}
+            </button>
+            {saved && (
+              <span className="text-green-600 text-xs font-semibold">
+                Guardado!
+              </span>
+            )}
+          </div>
         </div>
       )}
-
-      <div className="flex items-center gap-3 pt-2">
-        <button onClick={handleSave} disabled={saving} className="btn-primary text-xs py-2 px-5">
-          {saving ? 'A guardar...' : 'Guardar Secção'}
-        </button>
-        {saved && (
-          <span className="text-green-600 text-xs font-semibold">Guardado!</span>
-        )}
-      </div>
     </div>
   )
 }
 
 export default function AdminContent() {
-  const [pages, setPages] = useState([])
-  const [active, setActive] = useState(null)
-  const [page, setPage] = useState(null)
+  const [pages,   setPages]   = useState([])
+  const [active,  setActive]  = useState(null)
+  const [page,    setPage]    = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     api.getPages().then(data => {
       setPages(data)
-      if (data[0]) {
-        setActive(data[0].slug)
-        loadPage(data[0].slug)
-      }
+      if (data[0]) { setActive(data[0].slug); loadPage(data[0].slug) }
     }).finally(() => setLoading(false))
   }, [])
 
@@ -186,10 +258,12 @@ export default function AdminContent() {
           </div>
         </aside>
 
-        <div className="flex-1 space-y-5">
+        <div className="flex-1 space-y-4">
           {loading || !page ? (
             <div className="space-y-4">
-              {[1, 2, 3].map(i => <div key={i} className="h-32 bg-white rounded-2xl animate-pulse" />)}
+              {[1,2,3].map(i => (
+                <div key={i} className="h-16 bg-white rounded-2xl animate-pulse" />
+              ))}
             </div>
           ) : (
             page.sections?.map(section => (

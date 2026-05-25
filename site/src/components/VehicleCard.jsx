@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Lightbox from './Lightbox'
 
 function formatPrice(price) {
   if (!price) return 'Consultar'
@@ -37,6 +38,7 @@ function InfoRow({ label, value }) {
 export default function VehicleCard({ vehicle }) {
   const [expanded, setExpanded] = useState(false)
   const [photoIndex, setPhotoIndex] = useState(0)
+  const [lightbox, setLightbox] = useState(false)
 
   const images = Array.isArray(vehicle.images)
     ? vehicle.images.filter(Boolean).slice(0, 10)
@@ -65,7 +67,8 @@ export default function VehicleCard({ vehicle }) {
             <img
               src={images[photoIndex]}
               alt={vehicle.name}
-              className="w-full h-full object-cover
+              onClick={() => setLightbox(true)}
+              className="w-full h-full object-cover cursor-zoom-in
                          group-hover:scale-105 transition-transform duration-500"
             />
 
@@ -120,6 +123,13 @@ export default function VehicleCard({ vehicle }) {
             <div className="absolute top-3 right-3 bg-black/50 text-white
                             text-xs font-semibold px-2 py-1 rounded-full">
               {photoIndex + 1}/{images.length}
+            </div>
+
+            <div className="absolute bottom-12 left-3 bg-black/50 text-white
+                            text-xs px-2 py-1 rounded-lg opacity-0
+                            group-hover:opacity-100 transition-opacity duration-200
+                            pointer-events-none">
+              Clique para ampliar
             </div>
           </>
         ) : (
@@ -327,6 +337,17 @@ export default function VehicleCard({ vehicle }) {
           </div>
         )}
       </div>
+
+      {lightbox && (
+        <Lightbox
+          images={images}
+          index={photoIndex}
+          onClose={() => setLightbox(false)}
+          onPrev={() => setPhotoIndex(p => (p - 1 + images.length) % images.length)}
+          onNext={() => setPhotoIndex(p => (p + 1) % images.length)}
+          onGoTo={i => setPhotoIndex(i)}
+        />
+      )}
     </div>
   )
 }

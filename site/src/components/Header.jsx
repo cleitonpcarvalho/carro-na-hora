@@ -3,8 +3,8 @@ import { Link, useLocation } from 'react-router-dom'
 
 const NAV = [
   { label: 'Principal', to: '/' },
-  { label: 'Viaturas',  to: '/viaturas' },
   { label: 'Sobre Nós', to: '/sobre' },
+  { label: 'Viaturas',  to: '/viaturas' },
   { label: 'Contacto',  to: '/contacto' },
 ]
 
