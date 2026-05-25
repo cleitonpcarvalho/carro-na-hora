@@ -66,12 +66,21 @@ export default function Contacto() {
       <section className="relative pt-36 pb-24 overflow-hidden">
         {heroBg ? (
           <>
-            <img src={heroBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-brand-blue/82" />
-            <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/55 via-transparent to-dark-bg/45" />
+            <img
+              src={heroBg}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: 'rgba(0,24,50,0.88)' }}
+            />
           </>
         ) : (
-          <div className="absolute inset-0 bg-brand-blue" />
+          <div
+            className="absolute inset-0"
+            style={{ background: 'rgb(0,36,71)' }}
+          />
         )}
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <span className="text-brand-gold text-sm font-bold uppercase tracking-widest">Estamos Aqui</span>

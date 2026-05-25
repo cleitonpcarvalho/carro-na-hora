@@ -51,10 +51,11 @@ function isValidUrl(val) {
 
 function ImageFieldEditor({ fieldKey, value, onChange }) {
   const [showUrlInput, setShowUrlInput] = useState(false)
+  const isAuto = !value || value === 'auto'
 
   return (
     <div className="space-y-3">
-      {isValidUrl(value) ? (
+      {!isAuto && isValidUrl(value) ? (
         <div className="relative group">
           <img
             src={value}
@@ -74,6 +75,28 @@ function ImageFieldEditor({ fieldKey, value, onChange }) {
             </button>
           </div>
         </div>
+      ) : isAuto ? (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4
+                        flex items-start gap-3">
+          <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5"
+               fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <p className="text-xs font-bold text-blue-700">Imagem automática</p>
+            <p className="text-xs text-blue-600 mt-0.5 leading-relaxed">
+              Esta imagem é carregada automaticamente. Para usar uma imagem
+              personalizada, clique em &quot;Definir imagem personalizada&quot;.
+            </p>
+            <button
+              onClick={() => { onChange(''); setShowUrlInput(true) }}
+              className="text-xs text-brand-blue font-bold mt-2 underline"
+            >
+              Definir imagem personalizada
+            </button>
+          </div>
+        </div>
       ) : (
         <div className="h-24 bg-light-bg rounded-xl border-2 border-dashed
                         border-gray-200 flex flex-col items-center justify-center gap-2">
@@ -90,7 +113,7 @@ function ImageFieldEditor({ fieldKey, value, onChange }) {
       {showUrlInput && (
         <div className="flex gap-2">
           <input
-            value={value || ''}
+            value={value === 'auto' ? '' : (value || '')}
             onChange={e => onChange(e.target.value)}
             className="admin-input flex-1 text-xs"
             placeholder="Cole aqui o URL da imagem"

@@ -124,7 +124,7 @@ INSERT INTO sections (page_id, slug, title, content, order_num) VALUES
     "cta_primary_text": "Ver Viaturas",
     "cta_primary_url": "/viaturas",
     "cta_secondary_text": "Falar no WhatsApp",
-    "background_image": ""
+    "background_image": "auto"
   }',
   1
 ),
@@ -178,7 +178,7 @@ INSERT INTO sections (page_id, slug, title, content, order_num) VALUES
     "title": "Pronto para Encontrar o Seu Automóvel?",
     "subtitle": "Fale connosco agora mesmo. A negociação mais rápida de Lisboa começa aqui.",
     "cta_text": "Contactar no WhatsApp",
-    "background_image": ""
+    "background_image": "auto"
   }',
   4
 ),
@@ -228,7 +228,7 @@ INSERT INTO sections (page_id, slug, title, content, order_num) VALUES
   '{
     "title": "Nascemos para Simplificar a Compra do Seu Automóvel",
     "text": "Na Carro da Hora, acreditamos que comprar um automóvel deve ser uma experiência positiva — sem burocracia excessiva, sem pressão, sem incertezas. Surgimos com uma missão clara: colocar as melhores viaturas à disposição de quem as procura, com a rapidez que o mercado atual exige e a confiança que cada cliente merece. Localizados no coração de Lisboa, a nossa equipa de profissionais dedicados trabalha todos os dias para garantir que cada transação seja transparente, ágil e satisfatória. Do primeiro contacto à entrega das chaves, estamos consigo em cada passo.",
-    "image": ""
+    "image": "auto"
   }',
   2
 ),

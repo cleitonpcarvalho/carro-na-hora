@@ -1,9 +1,10 @@
 import { useEffect, useCallback } from 'react'
+import { createPortal }           from 'react-dom'
 
 export default function Lightbox({ images, index, onClose, onPrev, onNext, onGoTo }) {
   const handleKey = useCallback(e => {
-    if (e.key === 'Escape') onClose()
-    if (e.key === 'ArrowLeft') onPrev()
+    if (e.key === 'Escape')     onClose()
+    if (e.key === 'ArrowLeft')  onPrev()
     if (e.key === 'ArrowRight') onNext()
   }, [onClose, onPrev, onNext])
 
@@ -18,85 +19,197 @@ export default function Lightbox({ images, index, onClose, onPrev, onNext, onGoT
 
   if (!images || images.length === 0) return null
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+      style={{
+        position:        'fixed',
+        inset:           0,
+        zIndex:          9999,
+        backgroundColor: 'rgba(0,0,0,0.96)',
+        display:         'flex',
+        flexDirection:   'column',
+        alignItems:      'center',
+        justifyContent:  'center',
+      }}
       onClick={onClose}
     >
-      <button
-        onClick={onClose}
-        className="absolute top-5 right-5 text-white/70 hover:text-white
-                   bg-white/10 hover:bg-white/20 w-11 h-11 rounded-full
-                   flex items-center justify-center transition-all duration-200 z-10"
-        aria-label="Fechar"
+      {/* Top bar */}
+      <div
+        style={{
+          position:       'absolute',
+          top:            0,
+          left:           0,
+          right:          0,
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'space-between',
+          padding:        '16px 20px',
+          background:     'linear-gradient(to bottom, rgba(0,0,0,0.7), transparent)',
+          zIndex:         10,
+        }}
+        onClick={e => e.stopPropagation()}
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <div className="absolute top-5 left-1/2 -translate-x-1/2
-                      bg-black/60 text-white text-sm font-semibold
-                      px-4 py-1.5 rounded-full z-10">
-        {index + 1} / {images.length}
+        <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600 }}>
+          {index + 1} / {images.length}
+        </span>
+        <button
+          onClick={onClose}
+          style={{
+            background:   'rgba(255,255,255,0.15)',
+            border:       'none',
+            borderRadius: '50%',
+            width:        40,
+            height:       40,
+            display:      'flex',
+            alignItems:   'center',
+            justifyContent: 'center',
+            cursor:       'pointer',
+            color:        'white',
+            fontSize:     20,
+            lineHeight:   1,
+          }}
+        >
+          ×
+        </button>
       </div>
 
+      {/* Main image */}
       <div
-        className="relative max-w-5xl w-full px-16 flex items-center justify-center"
+        style={{
+          flex:           1,
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'center',
+          width:          '100%',
+          padding:        '60px 70px',
+          boxSizing:      'border-box',
+        }}
         onClick={e => e.stopPropagation()}
       >
         <img
+          key={index}
           src={images[index]}
           alt={`Foto ${index + 1}`}
-          className="max-h-[80vh] max-w-full object-contain rounded-xl shadow-2xl"
-          onError={e => { e.target.src = '' }}
+          style={{
+            maxWidth:   '100%',
+            maxHeight:  'calc(100vh - 160px)',
+            objectFit:  'contain',
+            borderRadius: 12,
+            boxShadow:  '0 25px 60px rgba(0,0,0,0.5)',
+            display:    'block',
+          }}
+          onError={e => { e.target.style.opacity = '0.3' }}
         />
       </div>
 
+      {/* Prev arrow */}
       {images.length > 1 && (
         <button
           onClick={e => { e.stopPropagation(); onPrev() }}
-          className="absolute left-4 top-1/2 -translate-y-1/2
-                     bg-white/10 hover:bg-white/25 text-white
-                     w-12 h-12 rounded-full flex items-center justify-center
-                     transition-all duration-200 text-2xl z-10"
-          aria-label="Anterior"
-        >‹</button>
+          style={{
+            position:       'absolute',
+            left:           12,
+            top:            '50%',
+            transform:      'translateY(-50%)',
+            background:     'rgba(255,255,255,0.12)',
+            border:         'none',
+            borderRadius:   '50%',
+            width:          52,
+            height:         52,
+            display:        'flex',
+            alignItems:     'center',
+            justifyContent: 'center',
+            cursor:         'pointer',
+            color:          'white',
+            fontSize:       28,
+            lineHeight:     1,
+            zIndex:         10,
+            transition:     'background 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+        >
+          ‹
+        </button>
       )}
 
+      {/* Next arrow */}
       {images.length > 1 && (
         <button
           onClick={e => { e.stopPropagation(); onNext() }}
-          className="absolute right-4 top-1/2 -translate-y-1/2
-                     bg-white/10 hover:bg-white/25 text-white
-                     w-12 h-12 rounded-full flex items-center justify-center
-                     transition-all duration-200 text-2xl z-10"
-          aria-label="Seguinte"
-        >›</button>
+          style={{
+            position:       'absolute',
+            right:          12,
+            top:            '50%',
+            transform:      'translateY(-50%)',
+            background:     'rgba(255,255,255,0.12)',
+            border:         'none',
+            borderRadius:   '50%',
+            width:          52,
+            height:         52,
+            display:        'flex',
+            alignItems:     'center',
+            justifyContent: 'center',
+            cursor:         'pointer',
+            color:          'white',
+            fontSize:       28,
+            lineHeight:     1,
+            zIndex:         10,
+            transition:     'background 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+        >
+          ›
+        </button>
       )}
 
+      {/* Thumbnail strip */}
       {images.length > 1 && (
         <div
-          className="absolute bottom-5 left-1/2 -translate-x-1/2
-                     flex gap-2 flex-wrap justify-center max-w-2xl px-4"
+          style={{
+            position:       'absolute',
+            bottom:         0,
+            left:           0,
+            right:          0,
+            background:     'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+            padding:        '20px 16px 16px',
+            display:        'flex',
+            justifyContent: 'center',
+            gap:            8,
+            flexWrap:       'wrap',
+            zIndex:         10,
+          }}
           onClick={e => e.stopPropagation()}
         >
           {images.map((url, i) => (
             <button
               key={i}
               onClick={e => { e.stopPropagation(); onGoTo(i) }}
-              className={`w-12 h-12 rounded-lg overflow-hidden border-2
-                          transition-all duration-200 flex-shrink-0 ${
-                i === index
-                  ? 'border-brand-gold scale-110'
-                  : 'border-white/20 hover:border-white/50'
-              }`}
+              style={{
+                width:        52,
+                height:       52,
+                borderRadius: 8,
+                overflow:     'hidden',
+                border:       i === index ? '2px solid rgb(242,142,35)' : '2px solid rgba(255,255,255,0.2)',
+                cursor:       'pointer',
+                padding:      0,
+                background:   'none',
+                transform:    i === index ? 'scale(1.1)' : 'scale(1)',
+                transition:   'all 0.2s',
+                flexShrink:   0,
+              }}
             >
-              <img src={url} alt="" className="w-full h-full object-cover" />
+              <img
+                src={url}
+                alt=""
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
             </button>
           ))}
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   )
 }
