@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { usePexels } from '../hooks/usePexels'
 import { useSectionImage } from '../hooks/useSectionImage'
+import { usePageContent } from '../hooks/usePageContent'
 
 export default function Contacto() {
+  const { get } = usePageContent('contacto')
+
   const { url: heroBg } = useSectionImage({
     pageSlug:      'contacto',
     sectionSlug:   'contact_hero',
@@ -92,10 +95,11 @@ export default function Contacto() {
         )}
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <span className="text-brand-gold text-sm font-bold uppercase tracking-widest">Estamos Aqui</span>
-          <h1 className="text-5xl md:text-6xl font-black text-white mt-2 mb-4">Fale Connosco</h1>
+          <h1 className="text-5xl md:text-6xl font-black text-white mt-2 mb-4">
+            {get('contact_hero', 'title', 'Fale Connosco')}
+          </h1>
           <p className="text-white/70 text-lg max-w-xl mx-auto">
-            Estamos prontos para ajudá-lo a encontrar o automóvel certo.
-            Contacte-nos por qualquer canal - respondemos rapidamente.
+            {get('contact_hero', 'subtitle', 'Estamos prontos para ajudá-lo a encontrar o automóvel certo.')}
           </p>
         </div>
       </section>
