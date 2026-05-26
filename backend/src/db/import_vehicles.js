@@ -2,7 +2,7 @@ import { readdir, stat, readFile } from 'fs/promises'
 import { join, extname, basename } from 'path'
 
 // ── CONFIG ────────────────────────────────────────────────────
-const API_BASE    = 'http://localhost:3001'
+const API_BASE = 'https://backend-carro-na-hora-production.up.railway.app'
 const PHOTOS_DIR  = '/Users/cleitonpcarvalho/Downloads/fotos_carro_da_hora'
 const ADMIN_EMAIL = 'perimetrodeeficacia@gmail.com'
 const ADMIN_PASS  = 'Carrosdovasco2025@'

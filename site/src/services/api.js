@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_ADMIN_API_BASE || 'http://localhost:3001'
+const BASE = import.meta.env.VITE_ADMIN_API_BASE || 'https://backend-carro-na-hora-production.up.railway.app'
 
 async function get(path) {
   const res = await fetch(`${BASE}${path}`)

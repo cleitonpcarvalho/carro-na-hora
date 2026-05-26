@@ -26,7 +26,7 @@ export default function Contacto() {
     setSending(true)
     setStatus(null)
     try {
-      const base = import.meta.env.VITE_ADMIN_API_BASE || 'http://localhost:3001'
+      const base = import.meta.env.VITE_ADMIN_API_BASE || 'https://backend-carro-na-hora-production.up.railway.app'
       const res = await fetch(`${base}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
