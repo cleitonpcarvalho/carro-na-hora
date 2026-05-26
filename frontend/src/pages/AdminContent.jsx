@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import AdminLayout from '../components/AdminLayout'
 import api         from '../services/api'
 
@@ -49,80 +49,81 @@ function isValidUrl(val) {
   return val && (val.startsWith('http://') || val.startsWith('https://'))
 }
 
-function ImageFieldEditor({ fieldKey, value, onChange }) {
-  const [showUrlInput, setShowUrlInput] = useState(false)
-  const isAuto = !value || value === 'auto'
+function ImageFieldEditor({ fieldKey, value, onChange, sectionId }) {
+  const fileRef   = useRef()
+  const [uploading, setUploading] = useState(false)
+  const isAuto    = !value || value === 'auto'
+  const hasImage  = !isAuto && value && value.startsWith('http')
+
+  const handleFileChange = async e => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('category', 'site')
+      const res  = await api.uploadMedia(fd)
+      if (res?.url) {
+        onChange(res.url)
+      }
+    } catch (err) {
+      alert('Erro ao carregar imagem: ' + err.message)
+    } finally {
+      setUploading(false)
+      e.target.value = ''
+    }
+  }
 
   return (
     <div className="space-y-3">
-      {!isAuto && isValidUrl(value) ? (
-        <div className="relative group">
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
+      {hasImage ? (
+        <div className="relative group rounded-xl overflow-hidden border border-gray-200">
           <img
             src={value}
             alt=""
-            className="w-full h-40 object-cover rounded-xl border border-gray-200"
-            onError={e => { e.target.style.display = 'none' }}
+            className="w-full h-44 object-cover"
+            onError={e => { e.target.style.opacity = '0.3' }}
           />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30
-                          rounded-xl transition-all duration-200 flex items-center
-                          justify-center opacity-0 group-hover:opacity-100">
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40
+                          transition-all duration-200 flex items-center justify-center">
             <button
-              onClick={() => setShowUrlInput(!showUrlInput)}
-              className="bg-white text-brand-blue text-xs font-bold
-                         px-4 py-2 rounded-lg shadow-sm"
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="opacity-0 group-hover:opacity-100 transition-opacity duration-200
+                         bg-white text-brand-blue text-xs font-bold
+                         px-5 py-2.5 rounded-xl shadow-lg"
             >
-              Substituir Imagem
-            </button>
-          </div>
-        </div>
-      ) : isAuto ? (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4
-                        flex items-start gap-3">
-          <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5"
-               fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div>
-            <p className="text-xs font-bold text-blue-700">Imagem automática</p>
-            <p className="text-xs text-blue-600 mt-0.5 leading-relaxed">
-              Esta imagem é carregada automaticamente. Para usar uma imagem
-              personalizada, clique em &quot;Definir imagem personalizada&quot;.
-            </p>
-            <button
-              onClick={() => { onChange(''); setShowUrlInput(true) }}
-              className="text-xs text-brand-blue font-bold mt-2 underline"
-            >
-              Definir imagem personalizada
+              {uploading ? 'A carregar...' : 'Substituir Imagem'}
             </button>
           </div>
         </div>
       ) : (
-        <div className="h-24 bg-light-bg rounded-xl border-2 border-dashed
-                        border-gray-200 flex flex-col items-center justify-center gap-2">
+        <div className="h-28 bg-light-bg rounded-xl border-2 border-dashed border-gray-200
+                        flex flex-col items-center justify-center gap-2">
+          <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828
+                 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12
+                 a2 2 0 002 2z" />
+          </svg>
           <p className="text-xs text-muted">Sem imagem</p>
           <button
-            onClick={() => setShowUrlInput(!showUrlInput)}
-            className="text-xs text-brand-blue font-semibold hover:underline"
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            className="text-xs text-brand-blue font-bold hover:underline"
           >
-            Adicionar Imagem
-          </button>
-        </div>
-      )}
-
-      {showUrlInput && (
-        <div className="flex gap-2">
-          <input
-            value={value === 'auto' ? '' : (value || '')}
-            onChange={e => onChange(e.target.value)}
-            className="admin-input flex-1 text-xs"
-            placeholder="Cole aqui o URL da imagem"
-          />
-          <button
-            onClick={() => setShowUrlInput(false)}
-            className="btn-secondary text-xs px-3"
-          >
-            OK
+            {uploading ? 'A carregar...' : 'Escolher Imagem'}
           </button>
         </div>
       )}
@@ -197,6 +198,7 @@ function SectionEditor({ section, onSave }) {
                     fieldKey={key}
                     value={value}
                     onChange={val => handleChange(key, val)}
+                    sectionId={section.id}
                   />
                 ) : isLongText(key) ? (
                   <textarea
