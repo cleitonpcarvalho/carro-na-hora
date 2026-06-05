@@ -101,6 +101,29 @@ function HeroSection({ get }) {
   )
 }
 
+function SimuladorSection() {
+  return (
+    <section className="section-padding bg-brand-blue">
+      <div className="max-w-3xl mx-auto px-6 text-center">
+        <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+          Simule o Seu Crédito Automóvel Agora
+        </h2>
+        <p className="text-white/75 text-lg mb-10 leading-relaxed">
+          Financiamento rápido e transparente. Descubra as melhores condições de crédito automóvel em Portugal.
+        </p>
+        <a
+          href="https://share.google/k2Lim4PJaBzKnHrHQ"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-cta-gradient text-white font-bold px-10 py-4 rounded-xl btn-glow hover:scale-105 transition-all duration-300"
+        >
+          Simule Agora
+        </a>
+      </div>
+    </section>
+  )
+}
+
 function FeaturedVehicles({ get }) {
   const { vehicles, loading } = useVehicles(true)
   if (!loading && vehicles.length === 0) return null
@@ -434,12 +457,14 @@ export default function Home() {
   return (
     <>
       <HeroSection    get={get} />
+      <SimuladorSection />
       <FeaturedVehicles get={get} />
       <WhyUsSection   get={get} />
       <ProcessSection />
       <StatsSection />
       <TestimonialsSection get={get} />
       <CTASection     get={get} />
+      <SimuladorSection />
     </>
   )
 }
